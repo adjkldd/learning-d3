@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="utf-8">
+
+    <title>Simple D3 Dev Env</title>
+
+    <script type="text/javascript" src="d3/d3.js"></script>
+
+<style>
+
+svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+}
+
+rect:hover {
+    fill: red;
+}
+
+.myText {
+    fill: yellow;
+    text-anchor: middle;
+}
+
+
+</style>
+
+</head>
+
+<body>
+
+    <script>
+
+var width = 400;
+var height = 400;
+var rectWidth = 40;
+var rectGap = 2;
+var xOffset = 60;
+
+var svg = d3.select("body")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+    
+var dataset = [10, 20, 30, 40, 33, 24, 12, 5];
+
+//画布周边的空白
+var padding = {left:50, right:20, top:20, bottom:20};
+
+
+// 序数比例尺
+var hLinear = d3.scale.ordinal()
+    .domain(d3.range(dataset.length))
+    .rangeRoundBands([0, rectWidth * dataset.length]);
+
+// 线性比例尺
+var vrLinear = d3.scale.linear()
+    .domain([0, d3.max(dataset)])
+    .range([height - padding.top - padding.bottom, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(hLinear)
+    .orient('bottom')
+    .ticks(10);
+
+
+var yAxis = d3.svg.axis()
+    .scale(vrLinear)
+    .orient('left')
+    .ticks(dataset.length);
+
+
+
+svg.selectAll("rect")
+    .data(dataset)
+    .enter()
+    .append("rect")
+    .attr("x", function(d, i) {
+        return padding.left + i * rectWidth;
+    })
+    .attr("y", function(d, i) {
+        return vrLinear(d) + padding.top;
+    })
+    .attr("height", function(d, i) {
+        return height -padding.top - padding.bottom - vrLinear(d);
+    })
+    .attr("width", rectWidth - rectGap)
+    .attr("fill", "steelblue");
+
+svg.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(" + padding.left + ", " + (padding.top+vrLinear(0)) + ")")
+    .call(xAxis);
+
+svg.append("g")
+    .attr("class", "axis")
+    .attr("transform", "translate(" + padding.left + ", " + padding.top + ")")
+    .call(yAxis);
+
+
+var texts = svg.selectAll(".myText")
+    .data(dataset)
+    .enter()
+    .append("text")
+    .attr("x", function(d, i) {
+        // return padding.left + i * rectWidth + 10;
+        return padding.left + hLinear(i) + rectWidth / 2 - rectGap / 2; 
+
+    })
+    .attr("y", function(d, i) {
+        return vrLinear(d) + padding.top + 14;
+    })
+    .attr("class", "myText")
+    .text(function(d) { return d; })
+
+
+
+    </script>
+
+</body>
+
+</html>
