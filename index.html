@@ -131,8 +131,15 @@ var texts = svg.selectAll(".myText")
     .attr("y", function(d, i) {
         return vrLinear(d) + padding.top + 14;
     })
+    .transition()
+    .delay(function(d, i) { 
+        return (i+1) * 200;
+    })
+    .duration(2000)
+    .ease("bounse")
     .attr("class", "myText")
-    .text(function(d) { return d; })
+    .text(function(d) { return d; });
+
 
 
 
